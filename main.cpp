@@ -6,6 +6,7 @@
 #include <cmath>
 #include "./solve_system.cpp"
 
+// the factor class is a type for the factors in the denominator
 class factor {
 
 public:
@@ -20,6 +21,7 @@ public:
     exponent = input_exponent;
   }
 
+  // get the value of the factor given an input, there is also the option to provide a different exponent
   double get_value(double input, bool alternative = false, int alternative_exponent = 0) {
     if (alternative) {
       return pow((coefficient * input + constant_term), alternative_exponent);
@@ -39,11 +41,12 @@ void generate_row(vector<factor>& factors, vector<double>& row, double input, in
 
 int main() {
 
+  // get the denominator from the user
   vector<factor> denominator;
   int order = 0;
   string buffer = "";
 
-  cout << "Where factors are in the form (ax + b)^c, please enter a, then a comma, followed by b, then c. Press return to enter the next. Type E to signal end.\n";
+  cout << "Please enter the denominator's factors.\nPut them in the form (ax + b)^c, please enter a, then a comma, followed by b, then c. Press return to enter the next. Type E to signal end.\n";
 
   while (buffer != "E") {
     getline(cin, buffer);
@@ -67,6 +70,7 @@ int main() {
 
   }
 
+  // get the numeratior from the user
   vector<double> numerator;
 
   cout << "Please enter the coefficients of the numerator polynomial, starting from the constant term and continuing with increasing exponents.\n";
@@ -79,52 +83,57 @@ int main() {
     }
   }
 
+  cout << "Denominator:\n";
   for (int i = 0; i < denominator.size(); i++) {
     cout << "coefficient = " << denominator[i].coefficient << ", constant term = " << denominator[i].constant_term << ", exponent = " << denominator[i].exponent << "\n";
   }
 
+  cout << "Numerator:\n";
   for (int i = 0; i < numerator.size(); i++) {
     cout << "x^" << i << " coefficient = " << numerator[i] << "\n";
   }
 
+  // create the solution vector and fill it with Not A Number values
   vector<double> solution;
 
   for (int i = 0; i < order; i++) {
     solution.push_back(NAN);
   }
 
+  // go through and get the solutions which can be obtained trivially (those where the denominator is the highest power of a factor)
   int cumulative_order = -1;
 
   for (int i = 0; i < denominator.size(); i++) {
     double input = -1.0 * (denominator[i].constant_term / denominator[i].coefficient);
-    cout << "i = " << i << ", input = " << input << ", polyval = " << get_polynomial_value(numerator, input) << ", factprod = " << get_factor_product(denominator, input, i, 0) << "\n";
+//    cout << "i = " << i << ", input = " << input << ", polyval = " << get_polynomial_value(numerator, input) << ", factprod = " << get_factor_product(denominator, input, i, 0) << "\n";
     solution[cumulative_order + denominator[i].exponent] = get_polynomial_value(numerator, input) / get_factor_product(denominator, input, i, 0);
     cumulative_order += denominator[i].exponent;
   }
 
-  for (int i = 0; i < solution.size(); i++) {
-    cout << "solution[" << i << "] = " << solution[i] << "\n";
-  }
+  //for (int i = 0; i < solution.size(); i++) {
+  //  cout << "solution[" << i << "] = " << solution[i] << "\n";
+  //}
 
+  // create a linear system and add the values, note that the solutions previously calculated are not recalculated here
   linear_system my_system(order - denominator.size());
-  cout << "Just created system with size: " << order - denominator.size() << "\n";
+  //cout << "Just created system with size: " << order - denominator.size() << "\n";
 
   for (int i = 0; true; i++) {
     vector<double> row;
     double input = pow(i + 6.75, 2);
     generate_row(denominator, row, input, order);
-    for (int a = 0; a < row.size(); a++) {
-      cout << "unended row[" << a << "] = " << row[a] << "\n";
-    }
+  //  for (int a = 0; a < row.size(); a++) {
+  //    cout << "unended row[" << a << "] = " << row[a] << "\n";
+  //  }
     row.push_back(generate_row_end(denominator, numerator, solution, input));
-    for (int a = 0; a < row.size(); a++) {
-      cout << "row[" << a << "] = " << row[a] << "\n";
-    }
+//    for (int a = 0; a < row.size(); a++) {
+//      cout << "row[" << a << "] = " << row[a] << "\n";
+//    }
     //row.push_back(get_polynomial_value(numerator, input));
     try {
       my_system.append_row(row);
     } catch(int exception) {
-      cout << "Exception thrown: " << exception << "\n";
+//      cout << "Exception thrown: " << exception << "\n";
       if (exception == 3) {
         continue;
       } else if (2) {
@@ -135,9 +144,10 @@ int main() {
     }
   }
 
-  cout << "Matrix, pre-solve:\n";
-  my_system.print_matrix();
+//  cout << "Matrix, pre-solve:\n";
+//  my_system.print_matrix();
 
+  // solve the system
   try {
     my_system.solve();
   } catch(...) {
@@ -145,9 +155,10 @@ int main() {
     throw 1;
   }
 
-  cout << "Matrix, post-solve:\n";
-  my_system.print_matrix();
+//  cout << "Matrix, post-solve:\n";
+//  my_system.print_matrix();
 
+  // extract the solutions from the linear system, putting them in their correct place in the solution vector
   vector<double> system_solutions;
   my_system.get_solutions(system_solutions);
 
@@ -160,8 +171,7 @@ int main() {
     }
   }
 
-  // TODO the problem with the code right now is that when you build the linear system, you have to subtract the known constants * their respective factors.
-
+  cout << "Solutions:\n";
   for (int i = 0; i < solution.size(); i++) {
     cout << "solution[" << i << "] = " << solution[i] << "\n";
   }
