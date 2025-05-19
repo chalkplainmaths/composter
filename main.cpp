@@ -6,6 +6,8 @@
 #include <cmath>
 #include "./solve_system.cpp"
 
+using namespace std;
+
 // the factor class is a type for the factors in the denominator
 class factor {
 
@@ -70,7 +72,7 @@ int main() {
 
   }
 
-  // get the numeratior from the user
+  // get the numerator from the user
   vector<double> numerator;
 
   cout << "Please enter the coefficients of the numerator polynomial, starting from the constant term and continuing with increasing exponents.\n";
