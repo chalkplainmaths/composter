@@ -79,7 +79,7 @@ public:
 		if (numerator_setup) {
 			find_trivials();
 			populate_system();
-			solve_system();
+			my_system.solve();
 			extract_solutions();
 		} else {
 			throw runtime_error("decomposition.decompose()");
@@ -169,10 +169,6 @@ private:
 			generate_row(row, input);
 			system_full = my_system.append_row(row);
 		}
-	}
-	
-	void solve_system() {
-		my_system.solve();
 	}
 	
 	void extract_solutions() {
