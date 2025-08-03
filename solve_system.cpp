@@ -80,7 +80,7 @@ private:
       matrix[position].swap(matrix[largest]);
     }
     if (matrix[position][position] == 0.0) {
-      throw exception("linear_system.pivot()");
+      throw runtime_error("linear_system.pivot()");
     }
   }
 

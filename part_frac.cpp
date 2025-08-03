@@ -53,7 +53,7 @@ public:
 	void finished_denominator() {
 		if (denominator.size() > 0) {
 			denominator_setup = true;
-			define_system_dimension(order - denominator.size());
+			my_system.define_dimension(order - denominator.size());
 		} else {
 			throw runtime_error("decomposition.finished_denominator()");
 		}
@@ -173,10 +173,6 @@ private:
 	
 	void solve_system() {
 		my_system.solve();
-	}
-	
-	void define_system_dimension(int dimension) {
-		my_system.define_dimension(dimension);
 	}
 	
 	void extract_solutions() {
