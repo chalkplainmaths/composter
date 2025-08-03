@@ -5,6 +5,53 @@ using namespace std;
 
 class linear_system {
 
+public:
+
+  linear_system() {
+  }
+  
+  void define_dimension(int input_dimension) {
+      dimension = input_dimension;
+    }
+
+  bool append_row(vector<double>& row) {
+      if (matrix.size() == dimension) {
+          return true;
+        } else {
+            for (int i = 0; i < matrix.size(); i++) {
+                if (is_linearly_dependent(i, row)) {
+                    return false;
+                }
+            }
+            matrix.push_back(row);
+            return false;
+        }
+  }
+
+  void print_matrix() {
+    for (int y = 0; y < matrix.size(); y++) {
+      for (int x = 0 ; x < matrix[0].size(); x++) {
+        cout << matrix[y][x] << " ";
+      }
+      cout << "\n";
+    }
+  }
+
+  void solve() {
+    for (int i = 0; i < matrix.size(); i++) {
+      pivot(i);
+      double factor = 1 / matrix[i][i];
+      multiply_row(i, factor);
+      eliminate(i);
+    }
+  }
+
+  void get_solutions(vector<double>& solutions) {
+    for (int i = 0; i < matrix.size(); i++) {
+      solutions.push_back(matrix[i][matrix[i].size() - 1]);
+    }
+  }
+
 private:
 
   vector<vector<double> > matrix;
@@ -33,7 +80,7 @@ private:
       matrix[position].swap(matrix[largest]);
     }
     if (matrix[position][position] == 0.0) {
-      throw 4;
+      throw exception("linear_system.pivot()");
     }
   }
 
@@ -54,51 +101,6 @@ private:
       }
     }
     return true;
-  }
-
-public:
-
-  linear_system(int input_dimension) {
-    dimension = input_dimension;
-  }
-
-  void append_row(vector<double>& row) {
-    if (row.size() != dimension + 1) { // wrong row length error
-      throw 1;
-    }
-    if (matrix.size() == dimension) { // full matrix error
-      throw 2;
-    }
-    for (int i = 0; i < matrix.size(); i++) {
-      if (is_linearly_dependent(i, row)) { // linear dependence error
-        throw 3;
-      }
-    }
-    matrix.push_back(row);
-  }
-
-  void print_matrix() {
-    for (int y = 0; y < matrix.size(); y++) {
-      for (int x = 0 ; x < matrix[0].size(); x++) {
-        cout << matrix[y][x] << " ";
-      }
-      cout << "\n";
-    }
-  }
-
-  void solve() {
-    for (int i = 0; i < matrix.size(); i++) {
-      pivot(i);
-      double factor = 1 / matrix[i][i];
-      multiply_row(i, factor);
-      eliminate(i);
-    }
-  }
-
-  void get_solutions(vector<double>& solutions) {
-    for (int i = 0; i < matrix.size(); i++) {
-      solutions.push_back(matrix[i][matrix[i].size() - 1]);
-    }
   }
 
 };
